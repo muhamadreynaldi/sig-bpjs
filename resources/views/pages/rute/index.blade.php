@@ -6,6 +6,10 @@
 <style>
     #mapRute { height: 500px; }
     .route-form-card { margin-bottom: 20px; }
+    .address-info {
+        font-size: 0.9rem;
+        color: #555;
+    }
 </style>
 @endpush
 
@@ -46,8 +50,18 @@
                     </div>
                 </div>
             </form>
-            <div id="routeResultInfo" class="mt-3">
+            <div id="routeResultInfo" class="mt-4">
+                {{-- Elemen untuk menampilkan alamat --}}
+                <div class="address-info mb-2">
+                    <p class="mb-0"><strong><i class="fas fa-map-marker-alt text-danger me-1"></i>Dari:</strong> <span id="routeStartAddress">-</span></p>
+                    <p class="mb-0"><strong><i class="fas fa-map-marker-alt text-primary me-1"></i>Ke:</strong> <span id="routeDestinationAddress">-</span></p>
+                </div>
+                <hr class="my-2">
                 <p class="mb-0">Total Jarak: <strong id="totalRouteDistance">- km</strong></p>
+                {{-- Tempat untuk info rute alternatif jika ditambahkan nanti --}}
+                {{-- <p class="mb-0" id="alternativeRouteInfo" style="display:none;">
+                    Total Jarak (Rute Alternatif): <strong id="totalAlternativeRouteDistance">- km</strong>
+                </p> --}}
             </div>
         </div>
     </div>
@@ -63,18 +77,16 @@
 
 @push('scripts')
 <script>
-
-    const kantorDesaFixedCoords = @json($kantorDesaCoords);
+    // Variabel dari PHP (pastikan sudah ada dari controller)
+    const kantorDesaFixedCoords = @json($kantorDesaCoords); // Pastikan ini benar: [-0.06173637665163168, 109.36675978082265]
     const defaultMapCenter = @json($defaultMapCenter);
     const defaultZoom = @json($defaultZoomLevel);
-    // const allPenerimasForMap = @json($allPenerimas);
 
     $(document).ready(function() {
-        // Inisialisasi Select2 pada dropdown penerima
         $('#destination_penerima').select2({
-            theme: 'bootstrap-5', // Gunakan tema Bootstrap 5
+            theme: 'bootstrap-5',
             placeholder: '-- Pilih Penerima Tujuan --',
-            allowClear: true // Izinkan untuk menghapus pilihan
+            allowClear: true
         });
 
         const mapRute = L.map('mapRute').setView(defaultMapCenter, defaultZoom);
@@ -94,23 +106,30 @@
 
         let destinationMarker = null;
         let routePolyline = null;
+        // let alternativeRoutePolyline = null; // Untuk rute alternatif nanti
+
         const totalDistanceEl = document.getElementById('totalRouteDistance');
         const routeSearchForm = document.getElementById('routeSearchForm');
-        // const destinationSelect = document.getElementById('destination_penerima'); // Tidak dipakai langsung lagi untuk event
+        
+        // --- TAMBAHAN: Ambil elemen untuk alamat ---
+        const routeStartAddressEl = document.getElementById('routeStartAddress');
+        const routeDestinationAddressEl = document.getElementById('routeDestinationAddress');
+        // const alternativeRouteInfoEl = document.getElementById('alternativeRouteInfo'); // Untuk rute alternatif nanti
+        // const totalAlternativeRouteDistanceEl = document.getElementById('totalAlternativeRouteDistance'); // Untuk rute alternatif nanti
+        // --- ------------------------------------
 
-        // Event listener untuk perubahan pada Select2
         $('#destination_penerima').on('select2:select', function (e) {
             if (destinationMarker) {
                 mapRute.removeLayer(destinationMarker);
                 destinationMarker = null;
             }
-            const selectedData = e.params.data; // Data dari option yang terpilih
-            const selectedOptionElement = selectedData.element; // Elemen <option> asli
+            const selectedData = e.params.data;
+            const selectedOptionElement = selectedData.element;
 
             if (selectedOptionElement && selectedOptionElement.value) {
                 const lat = parseFloat(selectedOptionElement.dataset.lat);
                 const lng = parseFloat(selectedOptionElement.dataset.lng);
-                const namaPenerima = selectedOptionElement.text.split(' - ')[1] || selectedOptionElement.text; // Ambil nama
+                const namaPenerima = selectedOptionElement.text.split(' - ')[1] || selectedOptionElement.text;
 
                 if (!isNaN(lat) && !isNaN(lng)) {
                     destinationMarker = L.marker([lat, lng], {
@@ -125,34 +144,41 @@
             }
         });
 
-        // Event listener jika pilihan Select2 dihapus (opsional)
         $('#destination_penerima').on('select2:unselect', function (e) {
-            if (destinationMarker) {
-                mapRute.removeLayer(destinationMarker);
-                destinationMarker = null;
-            }
-            if (routePolyline) { // Hapus juga rute jika tujuan dikosongkan
-                mapRute.removeLayer(routePolyline);
-                routePolyline = null;
-                totalDistanceEl.textContent = '- km';
-            }
-            // mapRute.setView(defaultMapCenter, defaultZoom); // Kembali ke view default
+            if (destinationMarker) mapRute.removeLayer(destinationMarker);
+            if (routePolyline) mapRute.removeLayer(routePolyline);
+            // if (alternativeRoutePolyline) mapRute.removeLayer(alternativeRoutePolyline); // Untuk rute alternatif nanti
+
+            destinationMarker = null;
+            routePolyline = null;
+            // alternativeRoutePolyline = null; // Untuk rute alternatif nanti
+
+            totalDistanceEl.textContent = '- km';
+            routeStartAddressEl.textContent = '-'; // Reset alamat
+            routeDestinationAddressEl.textContent = '-'; // Reset alamat
+            // alternativeRouteInfoEl.style.display = 'none'; // Untuk rute alternatif nanti
         });
 
 
         routeSearchForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            if (routePolyline) {
-                mapRute.removeLayer(routePolyline);
-                routePolyline = null;
-            }
-            totalDistanceEl.textContent = '- km';
+            if (routePolyline) mapRute.removeLayer(routePolyline);
+            // if (alternativeRoutePolyline) mapRute.removeLayer(alternativeRoutePolyline); // Reset rute alternatif juga
 
-            // Ambil value dari Select2
+            routePolyline = null;
+            // alternativeRoutePolyline = null;
+
+            totalDistanceEl.textContent = '- km';
+            routeStartAddressEl.textContent = 'Memuat...'; // Tampilkan status loading
+            routeDestinationAddressEl.textContent = 'Memuat...';
+            // alternativeRouteInfoEl.style.display = 'none';
+
             const penerimaId = $('#destination_penerima').val();
 
             if (!penerimaId) {
                 alert('Silakan pilih penerima tujuan.');
+                routeStartAddressEl.textContent = '-'; // Reset jika tidak ada tujuan
+                routeDestinationAddressEl.textContent = '-';
                 return;
             }
 
@@ -173,19 +199,44 @@
                 return response.json();
             })
             .then(data => {
+                // --- TAMBAHAN: Set teks alamat ---
+                routeStartAddressEl.textContent = data.start_address_display || 'Tidak diketahui';
+                routeDestinationAddressEl.textContent = data.destination_address_display || 'Tidak diketahui';
+                // --- -----------------------------
+
                 if (data.path && data.path.length > 0) {
                     routePolyline = L.polyline(data.path, { color: 'darkblue', weight: 6, opacity: 0.8 }).addTo(mapRute);
                     mapRute.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
                     totalDistanceEl.textContent = `${data.distance.toFixed(2)} km`;
+
+                    // Logika untuk rute alternatif (jika ada)
+                    // if (data.alternative_route && data.alternative_route.path && data.alternative_route.path.length > 0) {
+                    //     alternativeRoutePolyline = L.polyline(data.alternative_route.path, { color: 'green', weight: 5, opacity: 0.7, dashArray: '5, 10' }).addTo(mapRute);
+                    //     totalAlternativeRouteDistanceEl.textContent = `${data.alternative_route.distance.toFixed(2)} km`;
+                    //     alternativeRouteInfoEl.style.display = 'block';
+                    // }
+
                 } else if (data.error) {
                     alert('Error: ' + data.error);
+                     totalDistanceEl.textContent = '- km'; // Reset jarak jika error
                 } else {
                     alert('Tidak dapat menghitung rute.');
+                    totalDistanceEl.textContent = '- km'; // Reset jarak jika error
                 }
             })
             .catch(error => {
                 console.error('Error calculating route:', error);
-                alert(error.error || 'Terjadi kesalahan saat menghitung rute.');
+                let errorMessage = 'Terjadi kesalahan saat menghitung rute.';
+                if (error && error.error) { // Jika error adalah objek dengan properti 'error'
+                    errorMessage = error.error;
+                } else if (error && error.message) { // Jika error adalah objek Error JS standar
+                     errorMessage = error.message;
+                }
+                
+                alert(errorMessage);
+                routeStartAddressEl.textContent = '-'; // Reset jika error
+                routeDestinationAddressEl.textContent = '-';
+                totalDistanceEl.textContent = '- km';
             });
         });
     });
