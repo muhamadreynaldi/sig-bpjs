@@ -4,9 +4,42 @@
 
 @push('styles')
 <style>
-    body { background-color: #f8f9fa; }
-    .register-container { min-height: 80vh; display: flex; align-items: center; justify-content: center; }
-    .register-card { width: 100%; max-width: 450px; padding: 25px; border-radius: 8px;}
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        background-color: #f8f9fa;
+    }
+    #wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        width: 100%;
+    }
+    #page-content-wrapper {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .register-container { /* Nama kelas disesuaikan */
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .register-card { /* Nama kelas disesuaikan */
+        width: 100%;
+        max-width: 450px; /* Max-width untuk register card */
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    }
 </style>
 @endpush
 

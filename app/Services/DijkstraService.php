@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\File; // Meskipun kita akan pakai require untuk .php file
+use Illuminate\Support\Facades\File;
 
 class DijkstraService
 {
-    private array $graph_array_data = []; // Untuk menyimpan $graph_array dari file
-    private array $node_coordinates_map = []; // Untuk menyimpan $node_coordinates dari file
+    private array $graph_array_data = []; // Untuk menyimpan $graph_array dari file (Bobot)
+    private array $node_coordinates_map = []; // Untuk menyimpan $node_coordinates dari file (Koordinat)
 
     public function __construct(string $graphDataPhpFilePath = 'gis/graph_data_from_geojson_with_map.php')
     {
@@ -20,7 +20,6 @@ class DijkstraService
         $data = require $path; // Load data dari file PHP
 
         $this->graph_array_data = $data['graph_array'] ?? [];
-        // $this->map_coords_to_node_id_data = $data['map_coords_to_node_id'] ?? []; // Tidak langsung dipakai di service ini
         $this->node_coordinates_map = $data['node_coordinates'] ?? [];
 
         if (empty($this->graph_array_data) || empty($this->node_coordinates_map)) {
@@ -104,27 +103,25 @@ class DijkstraService
      */
     public function calculateDijkstraPath(string $sourceNodeId, string $targetNodeId): object
     {
-        $graph_array = $this->graph_array_data; // Gunakan data graf yang sudah diload
+        $graph_array = $this->graph_array_data;
         $vertices = [];
-        $neighbours = []; // Adjacency list
+        $neighbours = [];
 
         foreach ($graph_array as $edge) {
-            if (count($edge) < 3) continue; // Skip edge yang tidak valid
+            if (count($edge) < 3) continue;
             [$start, $end, $cost] = $edge;
-            $cost = (float) $cost; // Pastikan cost adalah float
+            $cost = (float) $cost;
 
             $vertices[] = $start;
             $vertices[] = $end;
-            // Pastikan node ada di $this->node_coordinates_map sebelum menambahkannya
-            // Ini untuk memastikan konsistensi antara $graph_array dan $node_coordinates_map
+
             if(isset($this->node_coordinates_map[$start]) && isset($this->node_coordinates_map[$end])) {
                 $neighbours[$start][] = ["end" => $end, "cost" => $cost];
-                $neighbours[$end][] = ["end" => $start, "cost" => $cost]; // Asumsi graf tidak berarah
+                $neighbours[$end][] = ["end" => $start, "cost" => $cost];
             }
         }
         $vertices = array_unique($vertices);
 
-        // Validasi source & target ada di daftar vertex yang valid (yang memiliki koordinat)
         if (!in_array($sourceNodeId, $vertices) || !isset($this->node_coordinates_map[$sourceNodeId]) ||
             !in_array($targetNodeId, $vertices) || !isset($this->node_coordinates_map[$targetNodeId])) {
             return (object)[
@@ -143,7 +140,7 @@ class DijkstraService
 
         $queue = new \SplPriorityQueue();
         $queue->setExtractFlags(\SplPriorityQueue::EXTR_DATA);
-        $queue->insert($sourceNodeId, 0.0); // Prioritas sebagai float
+        $queue->insert($sourceNodeId, 0.0);
 
         $pathFound = false;
         while (!$queue->isEmpty()) {
@@ -151,21 +148,20 @@ class DijkstraService
 
             if ($u === $targetNodeId) {
                 $pathFound = true;
-                break; // Optimasi: berhenti jika target sudah diekstrak
+                break;
             }
 
             if (!isset($neighbours[$u])) continue;
 
             foreach ($neighbours[$u] as $neighbor) {
                 $v = $neighbor["end"];
-                // Pastikan $v adalah vertex yang valid sebelum mengakses $dist[$v]
                 if (!isset($dist[$v])) continue;
 
                 $alt = $dist[$u] + $neighbor["cost"];
                 if ($alt < $dist[$v]) {
                     $dist[$v] = $alt;
                     $previous[$v] = $u;
-                    $queue->insert($v, -$alt); // Prioritas negatif untuk min-heap
+                    $queue->insert($v, -$alt);
                 }
             }
         }
@@ -181,9 +177,8 @@ class DijkstraService
         $curr = $targetNodeId;
         while ($curr !== null) {
             array_unshift($pathNodeIds, $curr);
-            if ($curr === $sourceNodeId) break; // Sudah sampai source
-            $curr = $previous[$curr] ?? null; // Safety check for previous
-             // Jika $curr menjadi null sebelum mencapai source, berarti ada masalah
+            if ($curr === $sourceNodeId) break;
+            $curr = $previous[$curr] ?? null;
             if ($curr === null && (empty($pathNodeIds) || $pathNodeIds[0] !== $sourceNodeId)) {
                  return (object)[
                     "route_available" => false, "polyline" => [], "total_distance" => 0,
@@ -192,10 +187,9 @@ class DijkstraService
             }
         }
 
-        // Pastikan path yang direkonstruksi valid
         if (empty($pathNodeIds) || $pathNodeIds[0] !== $sourceNodeId) {
              if ($sourceNodeId === $targetNodeId && empty($pathNodeIds)) {
-                 $pathNodeIds = [$sourceNodeId]; // Path ke diri sendiri
+                 $pathNodeIds = [$sourceNodeId];
              } else {
                 return (object)[
                     "route_available" => false, "polyline" => [], "total_distance" => 0,
@@ -204,15 +198,13 @@ class DijkstraService
              }
         }
 
-
-        // Menggunakan metode internal untuk mendapatkan koordinat polyline
         $polylineCoordinates = $this->getPolylineCoordinatesFromNodeIds($pathNodeIds);
 
         return (object)[
             "route_available" => true,
-            "polyline" => $polylineCoordinates, // Ini adalah array koordinat [lat,lng]
-            "dijkstra_result" => $pathNodeIds,   // Ini adalah array node ID
-            "total_distance" => $dist[$targetNodeId] // Jarak pada graf
+            "polyline" => $polylineCoordinates,
+            "dijkstra_result" => $pathNodeIds,
+            "total_distance" => $dist[$targetNodeId]
         ];
     }
 

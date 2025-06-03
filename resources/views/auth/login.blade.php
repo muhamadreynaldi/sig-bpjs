@@ -4,12 +4,40 @@
 
 @push('styles')
 <style>
-    body {
-        background-color: #f8f9fa; /* Optional: a light background for login page */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
     }
-    .login-container {
-        min-height: 80vh;
+    body {
+        background-color: #f8f9fa;
+        /* display: flex; /* Dihapus karena #wrapper akan jadi flex utama */
+        /* flex-direction: column; */
+    }
+    /* Pastikan #wrapper mengambil tinggi penuh dan bisa memusatkan #page-content-wrapper */
+    #wrapper {
         display: flex;
+        flex-direction: column; /* Konten akan mengisi ruang secara vertikal */
+        min-height: 100vh;
+        width: 100%;
+    }
+    /* Jadikan #page-content-wrapper sebagai flex container untuk memusatkan isinya */
+    #page-content-wrapper {
+        flex-grow: 1; /* Memastikan ia mengisi sisa ruang di #wrapper */
+        display: flex;
+        align-items: center; /* Pemusatan vertikal */
+        justify-content: center; /* Pemusatan horizontal */
+        width: 100% !important; /* Override style lain jika ada */
+        padding: 0 !important; /* Hapus padding bawaan jika mengganggu pemusatan */
+        margin: 0 !important; /* Hapus margin bawaan jika mengganggu pemusatan */
+    }
+    /* .login-container sekarang akan dipusatkan oleh #page-content-wrapper (melalui div.container-fluid) */
+    /* Anda bisa biarkan style .login-container yang lama jika hanya untuk membungkus .login-card */
+    .login-container {
+        /* min-height: 80vh; Dihapus atau disesuaikan, karena pemusatan utama oleh parent */
+        /* display: flex; align-items: center; justify-content: center; Dihapus atau disesuaikan */
+        width: 100%; /* Agar .login-card bisa diatur max-width-nya */
+        display: flex; /* Tetap gunakan flex untuk memusatkan .login-card di dalamnya */
         align-items: center;
         justify-content: center;
     }
@@ -18,6 +46,7 @@
         max-width: 400px;
         padding: 25px;
         border-radius: 8px;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075); /* Efek shadow standar */
     }
 </style>
 @endpush
@@ -79,11 +108,11 @@
                         Login
                     </button>
                 </div>
+
+                <div class="text-center mt-3">
+                    Belum punya akun? <a href="{{ route('register') }}">Register di sini</a>
+                </div>
             </form>
-            {{-- Jika Anda ingin menambahkan link "Forgot Password?" atau "Register" nanti --}}
-            {{-- <div class="text-center mt-3">
-                <a href="#">Lupa Password?</a> | <a href="#">Buat Akun Baru</a>
-            </div> --}}
         </div>
     </div>
 </div>

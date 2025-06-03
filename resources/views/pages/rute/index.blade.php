@@ -63,13 +63,13 @@
 
 @push('scripts')
 <script>
-    // Variabel dari PHP (pastikan sudah ada dari controller)
+
     const kantorDesaFixedCoords = @json($kantorDesaCoords);
     const defaultMapCenter = @json($defaultMapCenter);
     const defaultZoom = @json($defaultZoomLevel);
-    // const allPenerimasForMap = @json($allPenerimas); // Ini mungkin tidak terlalu dibutuhkan lagi jika Select2 menghandle list
+    // const allPenerimasForMap = @json($allPenerimas);
 
-    $(document).ready(function() { // Pastikan DOM sudah siap
+    $(document).ready(function() {
         // Inisialisasi Select2 pada dropdown penerima
         $('#destination_penerima').select2({
             theme: 'bootstrap-5', // Gunakan tema Bootstrap 5
@@ -188,6 +188,6 @@
                 alert(error.error || 'Terjadi kesalahan saat menghitung rute.');
             });
         });
-    }); // Akhir dari $(document).ready
+    });
 </script>
 @endpush
