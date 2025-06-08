@@ -3,28 +3,24 @@ window.addEventListener('DOMContentLoaded', event => {
     if (sidebarToggle) {
         sidebarToggle.addEventListener('click', event => {
             event.preventDefault();
-            // Toggle kelas pada #wrapper
             document.getElementById('wrapper').classList.toggle('toggled');
         });
     }
 });
 
-// Variabel global untuk peta di modal agar bisa dihancurkan dan dibuat ulang
 let mapDetailModalInstance = null;
 
 function showPenerimaDetailModal(penerimaId) {
     const modalElement = document.getElementById('penerimaDetailModal');
     const penerimaModal = new bootstrap.Modal(modalElement);
 
-    // Reset konten modal sebelumnya
     document.getElementById('detailNama').textContent = 'Memuat...';
     document.getElementById('detailNik').textContent = '';
-    // ... reset field lainnya ...
     if (mapDetailModalInstance) {
-        mapDetailModalInstance.remove(); // Hapus instance peta lama
+        mapDetailModalInstance.remove();
         mapDetailModalInstance = null;
     }
-    document.getElementById('mapDetailModal').innerHTML = ''; // Bersihkan div peta
+    document.getElementById('mapDetailModal').innerHTML = '';
 
 
     fetch(`/api/penerima-detail/${penerimaId}`)
@@ -43,8 +39,8 @@ function showPenerimaDetailModal(penerimaId) {
             const detailStatusCell = document.getElementById('detailStatus');
             detailStatusCell.innerHTML = '';
             const statusBadge = document.createElement('span');
-            const statusColorClass = getStatusColor(data.status); // Panggil fungsi di sini
-            statusBadge.className = `badge ${statusColorClass}`; // `bg-warning text-dark` akan jadi `badge bg-warning text-dark`
+            const statusColorClass = getStatusColor(data.status);
+            statusBadge.className = `badge ${statusColorClass}`;
             statusBadge.textContent = data.status;
             detailStatusCell.appendChild(statusBadge);
             document.getElementById('detailLat').textContent = data.lat;
@@ -59,22 +55,20 @@ function showPenerimaDetailModal(penerimaId) {
                 L.marker([data.lat, data.lng]).addTo(mapDetailModalInstance)
                     .bindPopup(`<b>${data.nama}</b>`).openPopup();
 
-                // Perlu me-resize peta setelah modal ditampilkan agar tile tidak rusak
                 modalElement.addEventListener('shown.bs.modal', function () {
                     if (mapDetailModalInstance) {
                         mapDetailModalInstance.invalidateSize();
                     }
                 }, { once: true });
 
-                // Di dalam showPenerimaDetailModal, setelah peta diinisialisasi
 const detailMarker = L.marker([data.lat, data.lng], {
-    icon: L.icon({ // Explicitly define icon similar to default
+    icon: L.icon({
         iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
         iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
         iconSize: [25, 41],
-        iconAnchor: [12, 41], // Titik di mana ikon "menancap" di peta
-        popupAnchor: [1, -34]  // Posisi popup relatif ke iconAnchor
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34]
     })
 }).addTo(mapDetailModalInstance);
 detailMarker.bindPopup(`<b>${data.nama}</b>`);
@@ -82,10 +76,7 @@ detailMarker.bindPopup(`<b>${data.nama}</b>`);
 modalElement.addEventListener('shown.bs.modal', function () {
     if (mapDetailModalInstance) {
         mapDetailModalInstance.invalidateSize();
-        // Setelah invalidateSize, coba buka popup di sini agar posisinya dihitung ulang
         detailMarker.openPopup();
-        // Atau jika sudah terbuka, coba pan sedikit agar Leaflet refresh
-        // mapDetailModalInstance.panBy([1,1]); mapDetailModalInstance.panBy([-1,-1]);
     }
 }, { once: true });
             } else {
@@ -99,10 +90,10 @@ modalElement.addEventListener('shown.bs.modal', function () {
         });
 }
 
-function getStatusColor(status) { // Pastikan nama fungsi ini yang dipanggil
+function getStatusColor(status) {
     switch (String(status).toLowerCase()) {
-        case 'aktif': return 'bg-success'; // Hanya kembalikan kelas background
-        case 'nonaktif': return 'bg-warning text-dark'; // Kelas background dan teks jika perlu
+        case 'aktif': return 'bg-success';
+        case 'nonaktif': return 'bg-warning text-dark';
         case 'meninggal': return 'bg-dark';
         default: return 'bg-secondary';
     }

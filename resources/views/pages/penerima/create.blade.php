@@ -2,7 +2,6 @@
 
 @section('title', 'Tambah Penerima BPJS - SIG BPJS')
 
-{{-- ... (bagian @section('content') tetap sama) ... --}}
 @section('content')
 <div class="container-fluid mt-4">
     <div class="card shadow-sm">
@@ -40,9 +39,7 @@
         const latInput = document.getElementById('lat');
         const lngInput = document.getElementById('lng');
 
-        // Koordinat default untuk pusat peta (misal: Kantor Desa Sungai Raya atau Pontianak)
-        // Ganti dengan koordinat yang lebih relevan untuk area input Anda
-        const defaultCenterLat = {{ config('leaflet.map_center_latitude', -0.06961) }}; // Ambil dari config atau hardcode
+        const defaultCenterLat = {{ config('leaflet.map_center_latitude', -0.06961) }};
         const defaultCenterLng = {{ config('leaflet.map_center_longitude', 109.36765) }};
         const initialZoom = {{ config('leaflet.zoom_level', 15) }};
 
@@ -55,7 +52,6 @@
 
         let marker;
 
-        // Fungsi untuk update input dan marker
         function updateMarkerAndInputs(latlng) {
             latInput.value = latlng.lat.toFixed(7);
             lngInput.value = latlng.lng.toFixed(7);
@@ -64,15 +60,13 @@
                 map.removeLayer(marker);
             }
             marker = L.marker(latlng).addTo(map);
-            map.panTo(latlng); // Pusatkan peta ke marker baru
+            map.panTo(latlng);
         }
 
-        // Event listener saat peta diklik
         map.on('click', function(e) {
             updateMarkerAndInputs(e.latlng);
         });
 
-        // Opsional: Jika ingin marker muncul saat input lat/lng diubah manual
         function onInputChange() {
             const lat = parseFloat(latInput.value);
             const lng = parseFloat(lngInput.value);
@@ -83,7 +77,6 @@
         latInput.addEventListener('change', onInputChange);
         lngInput.addEventListener('change', onInputChange);
 
-        // Inisialisasi marker jika input sudah ada nilainya (misal dari old input)
         if (latInput.value && lngInput.value) {
             onInputChange();
         }

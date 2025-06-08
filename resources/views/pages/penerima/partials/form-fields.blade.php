@@ -1,8 +1,3 @@
-{{--
-    Variabel yang dibutuhkan:
-    $penerima (objek model Penerima, bisa baru atau dari edit)
-    $statusOptions (array untuk dropdown status)
---}}
 <div class="row mb-3">
     <label for="nik" class="col-md-2 col-form-label">NIK <span class="text-danger">*</span></label>
     <div class="col-md-6">

@@ -6,12 +6,9 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StorePenerimaRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return true; // Izinkan semua user yang terautentikasi
+        return true;
     }
 
     /**
@@ -27,8 +24,8 @@ class StorePenerimaRequest extends FormRequest
             'alamat' => 'nullable|string',
             'dusun' => 'required|string|max:100',
             'status' => 'required|string|in:Aktif,Nonaktif,Meninggal',
-            'lat' => 'required|numeric|between:-90,90', // Validasi latitude
-            'lng' => 'required|numeric|between:-180,180', // Validasi longitude
+            'lat' => 'required|numeric|between:-90,90',
+            'lng' => 'required|numeric|between:-180,180',
         ];
     }
 

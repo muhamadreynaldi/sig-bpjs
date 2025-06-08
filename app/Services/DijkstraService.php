@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\File;
 
 class DijkstraService
 {
-    private array $graph_array_data = []; // Untuk menyimpan $graph_array dari file (Bobot)
-    private array $node_coordinates_map = []; // Untuk menyimpan $node_coordinates dari file (Koordinat)
+    private array $graph_array_data = [];
+    private array $node_coordinates_map = [];
 
     public function __construct(string $graphDataPhpFilePath = 'gis/graph_data_from_geojson_with_map.php')
     {
@@ -17,8 +17,7 @@ class DijkstraService
             throw new \Exception("File data graf PHP tidak ditemukan: {$path}");
         }
 
-        $data = require $path; // Load data dari file PHP
-
+        $data = require $path;
         $this->graph_array_data = $data['graph_array'] ?? [];
         $this->node_coordinates_map = $data['node_coordinates'] ?? [];
 
@@ -35,15 +34,11 @@ class DijkstraService
     public function parseCoordinatesString(string $coordString): ?array
     {
         if (preg_match('/^\(\s*([-+]?\d*\.?\d+)\s*,\s*([-+]?\d*\.?\d+)\s*\)$/', $coordString, $matches)) {
-            // Asumsi format dalam string adalah (longitude, latitude)
             return ['lng' => (float)$matches[1], 'lat' => (float)$matches[2]];
         }
         return null;
     }
 
-    /**
-     * Menemukan node ID terdekat dalam graf dari koordinat (lat, lng) yang diberikan.
-     */
     public function findNearestNode(float $targetLat, float $targetLng): ?string
     {
         $nearestNodeId = null;
@@ -88,7 +83,6 @@ class DijkstraService
         foreach ($nodeIdsPath as $nodeId) {
             $parsedCoords = $this->getNodeCoordinatesById($nodeId);
             if ($parsedCoords) {
-                // Leaflet mengharapkan [lat, lng]
                 $coordinates[] = [$parsedCoords['lat'], $parsedCoords['lng']];
             }
         }
@@ -214,7 +208,7 @@ class DijkstraService
      */
     public function haversineDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
     {
-        $earthRadius = 6371; // Radius bumi dalam kilometer
+        $earthRadius = 6371;
 
         $dLat = deg2rad($lat2 - $lat1);
         $dLon = deg2rad($lon2 - $lon1);

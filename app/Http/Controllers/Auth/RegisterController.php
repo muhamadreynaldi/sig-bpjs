@@ -9,43 +9,36 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Validation\Rules; // Untuk aturan validasi password
+use Illuminate\Validation\Rules;
 
 class RegisterController extends Controller
 {
     public function __construct()
     {
-        // Hanya tamu yang bisa mengakses halaman registrasi
         $this->middleware('guest');
     }
 
-    /**
-     * Display the registration view.
-     */
     public function showRegistrationForm(): View
     {
         return view('auth.register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     */
     public function register(Request $request): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()], // Menggunakan aturan default Laravel
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'user', // Default role untuk registrasi baru adalah 'user'
+            'role' => 'user',
         ]);
 
-        Auth::login($user); // Langsung login setelah registrasi
+        Auth::login($user);
 
         return redirect()->route('dashboard')->with('success', 'Registrasi berhasil! Selamat datang.');
     }

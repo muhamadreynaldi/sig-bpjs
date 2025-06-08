@@ -29,5 +29,5 @@ class Penerima extends Model
      *
      * @var string
      */
-    protected $table = 'penerimas'; // Eksplisit mendefinisikan nama tabel
+    protected $table = 'penerimas';
 }

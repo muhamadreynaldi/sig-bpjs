@@ -1,4 +1,4 @@
-@extends('layouts.master') {{-- Atau layout khusus auth jika ada --}}
+@extends('layouts.master')
 
 @section('title', 'Registrasi Akun - SIG BPJS')
 
@@ -27,15 +27,15 @@
         padding: 0 !important;
         margin: 0 !important;
     }
-    .register-container { /* Nama kelas disesuaikan */
+    .register-container {
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
     }
-    .register-card { /* Nama kelas disesuaikan */
+    .register-card {
         width: 100%;
-        max-width: 450px; /* Max-width untuk register card */
+        max-width: 450px;
         padding: 25px;
         border-radius: 8px;
         box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
@@ -101,7 +101,6 @@
 @endsection
 
 @push('scripts')
-{{-- Script untuk menyembunyikan navbar & sidebar di halaman registrasi, mirip halaman login --}}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const sidebar = document.getElementById('sidebar-wrapper');

@@ -1,17 +1,12 @@
-/* public/css/style.css */
-
-/* Reset beberapa style Bootstrap bawaan jika perlu */
 body {
-    font-family: 'Figtree', sans-serif; /* Sesuai default Laravel, bisa disesuaikan */
+    font-family: 'Figtree', sans-serif;
 }
 
-/* === Navbar Styling === */
-/* Hapus kelas .bg-light dari navbar di HTML jika menggunakan ini */
 #wrapper {
     display: flex;
     align-items: stretch;
-    position: relative; /* Untuk konteks positioning jika ada elemen absolute/fixed di dalamnya */
-    overflow-x: hidden; /* <<< KUNCI UTAMA: Mencegah scroll horizontal pada wrapper utama */
+    position: relative;
+    overflow-x: hidden;
 }
 
 #sidebar-wrapper {
@@ -21,26 +16,21 @@ body {
     width: 250px;
     height: 100vh;
     z-index: 1020;
-    /* overflow-y: auto; /* HAPUS INI dari #sidebar-wrapper */
     overflow-x: hidden;
     transition: left 0.25s ease-out;
 
-    /* Jadikan sidebar sebagai flex container */
     display: flex;
-    flex-direction: column; /* Susun item secara vertikal */
+    flex-direction: column;
 
-    /* Asumsi style warna gelap dari sebelumnya: */
-    background-color: #2C3E50 !important; /* Warna utama sidebar */
+    background-color: #2C3E50 !important;
 }
 
 #sidebar-wrapper .list-group {
-    flex-shrink: 0; /* Mencegah list-group menyusut jika tidak perlu */
+    flex-shrink: 0;
 }
 
 #sidebar-wrapper .sidebar-heading {
-    /* padding, font-size, font-weight, background-color, color, border-bottom
-       (Style ini sudah ada dari penyesuaian warna sebelumnya, pastikan konsisten) */
-    flex-shrink: 0; /* Mencegah heading menyusut */
+    flex-shrink: 0;
     background-color: #1F2B38 !important;
     color: #ECF0F1 !important;
     padding: 0.875rem 1.25rem;
@@ -78,51 +68,43 @@ body {
     color: #FFFFFF !important;
 }
 
-/* === Sidebar Footer Styling === */
 .sidebar-footer {
-    padding: 1rem 1.25rem; /* Sesuaikan padding agar konsisten dengan item menu */
-    text-align: center; /* Pusatkan teks */
-    border-top: 1px solid #34495E; /* Garis pemisah dari menu di atas (sesuaikan warnanya dengan tema sidebar Anda) */
-    margin-top: auto; /* Mendorong footer ke bagian paling bawah jika sidebar memiliki tinggi tetap atau flex */
-    /* Jika sidebar Anda berwarna gelap, pastikan warna teks kontras */
-    /* Contoh jika sidebar-wrapper memiliki background #2C3E50: */
-    color: #BDC3C7; /* Warna teks abu-abu muda */
+    padding: 1rem 1.25rem;
+    text-align: center;
+    border-top: 1px solid #34495E;
+    margin-top: auto;
+    color: #BDC3C7;
 }
 
 .sidebar-footer small {
-    font-size: 0.8em; /* Ukuran font lebih kecil */
+    font-size: 0.8em;
 }
 
 #page-content-wrapper {
-    min-height: 100vh; /* Pastikan konten mengisi tinggi viewport */
-    padding-top: 70px; /* Sesuaikan dengan tinggi navbar Anda (misal: 56px atau 70px) */
-                        /* Ini penting agar konten tidak tertutup navbar yang fixed */
-    margin-left: 250px; /* Beri ruang untuk sidebar yang fixed */
-    transition: margin-left 0.25s ease-out; /* Transisi untuk efek buka/tutup sidebar */
-    width: calc(100% - 250px); /* Lebar konten adalah sisa dari sidebar */
-                               /* Ini opsional jika margin-left sudah cukup */
+    min-height: 100vh;
+    padding-top: 70px;
+    margin-left: 250px;
+    transition: margin-left 0.25s ease-out;
+    width: calc(100% - 250px);
 }
 
-/* === Toggled State (Sidebar Ditutup) === */
 #wrapper.toggled #sidebar-wrapper {
-    left: -250px; /* Geser sidebar ke kiri keluar dari viewport */
+    left: -250px;
 }
 
 #wrapper.toggled #page-content-wrapper {
-    margin-left: 0; /* Konten utama mengisi seluruh lebar */
-    width: 100%; /* Lebar konten menjadi penuh */
+    margin-left: 0;
+    width: 100%;
 }
 
-
-/* === Navbar Styling === */
 #page-content-wrapper .navbar {
     background-color: #3498DB !important;
     border-bottom: 1px solid #2980B9 !important;
 }
-/* ... (sisa style navbar dari kustomisasi sebelumnya) ... */
+
 .navbar .navbar-brand,
 .navbar .nav-link,
-#sidebarToggle { /* Tombol menu sidebar */
+#sidebarToggle {
     color: #ffffff !important;
 }
 
@@ -140,14 +122,12 @@ body {
 }
 
 #sidebar-menu-items.list-group-flush {
-    flex-grow: 1; /* Membuat bagian menu ini mengambil ruang yang tersedia */
-    overflow-y: auto; /* Hanya bagian menu ini yang akan scroll jika kontennya panjang */
+    flex-grow: 1;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
 #sidebar-menu-items.list-group-flush .list-group-item {
-    /* Style untuk item menu (warna teks, background, hover, active)
-       (Style ini sudah ada dari penyesuaian warna sebelumnya, pastikan konsisten) */
     background-color: transparent !important;
     color: #BDC3C7 !important;
     border: none !important;
@@ -174,36 +154,32 @@ body {
 }
 
 .sidebar-footer {
-    padding: 1rem 1.25rem; /* Beri padding agar tidak terlalu mepet */
-    text-align: center; /* Teks di tengah */
-    color: #7F8C8D; /* Warna teks footer (abu-abu redup) */
-    background-color: #1F2B38; /* Samakan dengan heading atau sedikit beda, opsional */
-    border-top: 1px solid #34495E; /* Garis pemisah dari menu di atasnya */
-    flex-shrink: 0; /* Mencegah footer menyusut */
-    /* mt-auto dari HTML akan bekerja jika display: flex pada parent sudah benar */
+    padding: 1rem 1.25rem;
+    text-align: center;
+    color: #7F8C8D;
+    background-color: #1F2B38;
+    border-top: 1px solid #34495E;
+    flex-shrink: 0;
 }
 
 .sidebar-footer small {
-    font-size: 0.8em; /* Ukuran teks kecil */
+    font-size: 0.8em;
 }
 
 .filter-card .select2-container {
-    width: 100% !important; /* Paksa Select2 untuk mengisi 100% lebar kolom induknya */
-    /* display: block; */ /* Biasanya Select2 sudah block atau inline-block yang sesuai */
+    width: 100% !important;
 }
 
-/* === Responsive (jika diperlukan penyesuaian khusus untuk mobile) === */
 @media (max-width: 768px) {
     #sidebar-wrapper {
-        left: -250px; /* Sidebar tersembunyi secara default di layar kecil */
+        left: -250px;
     }
     #page-content-wrapper {
-        margin-left: 0; /* Konten utama mengisi seluruh lebar di layar kecil */
+        margin-left: 0;
         width: 100%;
-        /* padding-top tetap diperlukan untuk fixed navbar */
+
     }
 
-    /* Saat ditoggle di layar kecil, sidebar muncul */
     #wrapper.toggled #sidebar-wrapper {
         left: 0;
     }

@@ -6,17 +6,16 @@
 <style>
     #mapPemetaan { height: 600px; }
     .filter-card { margin-bottom: 20px; }
-    /* Styling tambahan agar Select2 di filter card terlihat normal */
     .filter-card .select2-container--bootstrap-5 .select2-selection--single {
-        height: calc(2.25rem + 2px) !important; /* Sesuaikan dengan form-control standar */
+        height: calc(2.25rem + 2px) !important;
         padding: 0.375rem 0.75rem !important;
         font-size: 1rem !important;
         line-height: 1.5 !important;
     }
     .filter-card .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
-        line-height: 1.5rem !important; /* Sesuaikan agar teks pas di tengah */
-        padding-left: 0 !important; /* Hapus padding kiri default jika ada */
-        padding-right: 0 !important; /* Hapus padding kanan default jika ada */
+        line-height: 1.5rem !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }
      .filter-card .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
         height: calc(2.25rem + 2px) !important;
@@ -41,7 +40,7 @@
                         <label for="search_nama_nik" class="form-label">Cari Nama/NIK:</label>
                          <select name="search_nama_nik" id="searchPemetaanSelect2" class="form-select">
                             <option value="">Ketik atau pilih Nama/NIK...</option>
-                            @if(isset($searchOptionsList)) {{-- Pastikan variabel ada --}}
+                            @if(isset($searchOptionsList))
                                 @foreach($searchOptionsList as $option)
                                     <option value="{{ $option->nik }} - {{ $option->nama }}"
                                             {{ (isset($input['search_nama_nik']) && $input['search_nama_nik'] == ($option->nik . ' - ' . $option->nama)) ? 'selected' : '' }}>
@@ -99,13 +98,11 @@
 
 @push('scripts')
 <script>
-    // Variabel data dari PHP Controller
     const penerimasData = @json($penerimas);
-    const defaultLocation = @json($defaultLocation); // Ini sudah diatur dari controller
-    const initialZoom = @json($zoomLevel); // Ini juga sudah diatur dari controller
+    const defaultLocation = @json($defaultLocation);
+    const initialZoom = @json($zoomLevel);
     const isAdmin = {{ Auth::user()->isAdmin() ? 'true' : 'false' }};
 
-    // Fungsi helper untuk mendapatkan ikon marker berdasarkan status BPJS
     function getMarkerIconByStatus(status) {
         let iconUrl;
         switch (String(status).toLowerCase()) {
@@ -128,9 +125,6 @@
         });
     }
 
-    // Fungsi helper untuk mendapatkan kelas warna badge Bootstrap berdasarkan status
-    // Fungsi ini sudah ada di script.js global Anda, jika ya, tidak perlu didefinisikan ulang di sini.
-    // Jika belum, atau ingin spesifik di halaman ini:
     function getStatusColorClass(status) {
         switch (String(status).toLowerCase()) {
             case 'aktif': return 'success';
@@ -140,9 +134,9 @@
         }
     }
 
-        document.addEventListener('DOMContentLoaded', function() { // Pastikan DOM siap sebelum Leaflet
+        document.addEventListener('DOMContentLoaded', function() {
         const mapElement = document.getElementById('mapPemetaan');
-        if (mapElement) { // Hanya jalankan jika elemen peta ada
+        if (mapElement) {
             const map = L.map('mapPemetaan').setView(defaultLocation, initialZoom);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -190,23 +184,14 @@
                        penerimasData[0].lat !== null && penerimasData[0].lng !== null) {
                 map.setView([parseFloat(penerimasData[0].lat), parseFloat(penerimasData[0].lng)], 16);
             }
-             // Listener untuk invalidateSize jika peta ada di dalam tab atau elemen yang awalnya hidden
-            // Jika peta langsung visible, ini mungkin tidak selalu perlu, tapi aman untuk ditambahkan
-            // setTimeout(function() {
-            //     map.invalidateSize();
-            // }, 100); // Sedikit delay
         }
     });
-    // Jika tidak ada marker sama sekali (penerimasData kosong atau tidak ada koordinat valid),
-    // peta akan tetap terpusat pada defaultLocation dan initialZoom.
 
-    // Inisialisasi jQuery UI Autocomplete untuk input pencarian
-    $(function() { // Shorthand untuk $(document).ready()
+    $(function() {
     $('#searchPemetaanSelect2').select2({
         theme: 'bootstrap-5',
         placeholder: 'Ketik atau pilih Nama/NIK...',
         allowClear: true
-        // Tidak perlu tags: true agar perilakunya sama persis (hanya bisa memilih dari list)
     });
     });
 </script>

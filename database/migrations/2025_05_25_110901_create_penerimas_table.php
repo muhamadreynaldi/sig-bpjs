@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('penerimas', function (Blueprint $table) {
             $table->id();
-            $table->string('nik', 16)->unique(); // NIK biasanya 16 digit dan unik
+            $table->string('nik', 16)->unique();
             $table->string('nama');
             $table->text('alamat')->nullable();
             $table->string('dusun')->nullable();
             $table->string('status');
-            $table->decimal('lat', 10, 7); // Latitude
-            $table->decimal('lng', 10, 7); // Longitude
+            $table->decimal('lat', 10, 7);
+            $table->decimal('lng', 10, 7);
             $table->timestamps();
         });
     }

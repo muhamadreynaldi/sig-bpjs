@@ -16,7 +16,7 @@
         box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15)!important;
     }
     .summary-card .card-icon {
-        font-size: 3rem; /* Ukuran ikon besar */
+        font-size: 3rem;
         opacity: 0.8;
     }
     .summary-card .card-title-text {
@@ -28,11 +28,11 @@
         font-size: 2.25rem;
         font-weight: bold;
     }
-    .bg-card-total { background-color: #17A2B8; } /* Info */
-    .bg-card-aktif { background-color: #28A745; } /* Success */
-    .bg-card-nonaktif { background-color: #FFC107; color: #212529 !important; } /* Warning - text dark */
-    .bg-card-meninggal { background-color: #343A40; } /* Dark */
-    .bg-card-dusun { background-color: #6F42C1; } /* Purple */
+    .bg-card-total { background-color: #17A2B8; }
+    .bg-card-aktif { background-color: #28A745; }
+    .bg-card-nonaktif { background-color: #FFC107; color: #212529 !important; }
+    .bg-card-meninggal { background-color: #343A40; }
+    .bg-card-dusun { background-color: #6F42C1; }
 
     .quick-link-card {
         transition: transform 0.2s ease-in-out;
@@ -65,9 +65,8 @@
                 <div class="card-body">
                     <form method="GET" action="{{ route('dashboard') }}">
                         <div class="input-group">
-                            {{-- Ganti input teks dengan select untuk Select2 --}}
                             <select name="search" id="searchDashboardSelect2" class="form-select form-select-lg">
-                                <option value="">Ketik atau pilih Nama/NIK...</option> {{-- Placeholder --}}
+                                <option value="">Ketik atau pilih Nama/NIK...</option>
                                 @foreach($searchOptionsList as $option)
                                     <option value="{{ $option->nik }} - {{ $option->nama }}"
                                             {{ ($search ?? '') == ($option->nik . ' - ' . $option->nama) ? 'selected' : '' }}>
@@ -96,7 +95,6 @@
                                         <strong>{{ $penerima->nama }}</strong> (NIK: {{ $penerima->nik }})<br>
                                         <small>Dusun: {{ $penerima->dusun }}, Status: {{ $penerima->status }}</small>
                                     </div>
-                                    {{-- Tombol Detail (sudah ada logika admin/user) --}}
                                     @if(Auth::user()->isAdmin())
                                         <a href="{{ route('penerima.show', $penerima->id) }}" class="btn btn-sm btn-outline-info" title="Lihat Detail (Admin)">
                                             <i class="fas fa-user-shield"></i> Detail
@@ -165,18 +163,6 @@
                 </div>
             </div>
         </div>
-        {{-- Jika ingin menambahkan jumlah dusun --}}
-        {{-- <div class="col-xl-3 col-md-6">
-            <div class="card summary-card bg-card-dusun shadow">
-                 <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="card-title-text">Jumlah Dusun</div>
-                        <div class="card-value">{{ $jumlahDusun }}</div>
-                    </div>
-                    <i class="fas fa-map-pin card-icon"></i>
-                </div>
-            </div>
-        </div> --}}
     </div>
 
     <div class="row">
@@ -205,7 +191,7 @@
             </div>
         </div>
                 @auth
-            @if(Auth::user()->isAdmin()) {{-- Atau Auth::user()->role == 'admin' --}}
+            @if(Auth::user()->isAdmin())
             <div class="col-md-4 mb-3">
                  <div class="card text-white bg-primary quick-link-card shadow">
                     <div class="card-body text-center">
@@ -225,20 +211,13 @@
 
 @push('scripts')
 <script>
-$(function() { // Pastikan DOM ready
+$(function() {
     $('#searchDashboardSelect2').select2({
         theme: 'bootstrap-5',
         placeholder: 'Ketik atau pilih Nama/NIK...',
         allowClear: true
-        // Tidak perlu AJAX karena data sudah di-load di <option>
-        // Tidak perlu tags: true agar perilakunya sama persis (hanya bisa memilih dari list)
     });
 
-    // Jika ingin form langsung tersubmit saat item dipilih:
-    // $('#searchDashboardSelect2').on('select2:select', function (e) {
-    //     $(this).closest('form').submit();
-    // });
 });
-// Pastikan fungsi showPenerimaDetailModal() ada (dari script.js atau di sini)
 </script>
 @endpush

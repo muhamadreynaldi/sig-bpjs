@@ -21,8 +21,7 @@ class RouteController extends Controller
     public function indexPage(Request $request): View
     {
         $allPenerimas = Penerima::orderBy('nama')->get(['id', 'nik', 'nama', 'lat', 'lng']);
-        // Ganti dengan koordinat aktual Kantor Desa Sungai Raya Anda
-        $kantorDesaCoords = [-0.06173637665163168, 109.36675978082265]; // PASTIKAN INI SUDAH BENAR
+        $kantorDesaCoords = [-0.06173637665163168, 109.36675978082265];
         
         return view('pages.rute.index', [
             'allPenerimas' => $allPenerimas,
@@ -47,13 +46,8 @@ class RouteController extends Controller
         $endLat = (float) $penerimaTujuan->lat;
         $endLng = (float) $penerimaTujuan->lng;
 
-        // --- TAMBAHAN: Informasi Alamat ---
-        // Anda bisa membuat ini lebih dinamis jika perlu, tapi untuk Kantor Desa Sungai Raya, ini statis.
-        // Pastikan alamat ini sesuai dengan yang ada di dokumen skripsi atau data aktual.
-        // Saya akan menggunakan placeholder, silakan disesuaikan.
-        $alamatKantorDesa = "Kantor Desa Sungai Raya, Kabupaten Kubu Raya"; // GANTI DENGAN ALAMAT LENGKAP & BENAR
+        $alamatKantorDesa = "Kantor Desa Sungai Raya, Kabupaten Kubu Raya";
         $alamatTujuan = $penerimaTujuan->alamat ?: ($penerimaTujuan->dusun ? 'Dusun ' . $penerimaTujuan->dusun : $penerimaTujuan->nama);
-        // ------------------------------------
 
         $startNodeId = $this->dijkstraService->findNearestNode($startLat, $startLng);
         $endNodeId = $this->dijkstraService->findNearestNode($endLat, $endLng);
@@ -61,7 +55,7 @@ class RouteController extends Controller
         if (!$startNodeId || !$endNodeId) {
             return response()->json([
                 'error' => 'Tidak dapat menemukan node jalan terdekat untuk titik awal atau tujuan.',
-                'start_address_display' => $alamatKantorDesa, // Kirim juga jika ada error
+                'start_address_display' => $alamatKantorDesa,
                 'destination_address_display' => $alamatTujuan
             ], 400);
         }
@@ -72,8 +66,8 @@ class RouteController extends Controller
             return response()->json([
                 'path' => $directPathCoords,
                 'distance' => round($directDistance, 2),
-                'start_address_display' => $alamatKantorDesa, // TAMBAHKAN
-                'destination_address_display' => $alamatTujuan // TAMBAHKAN
+                'start_address_display' => $alamatKantorDesa,
+                'destination_address_display' => $alamatTujuan
             ]);
         }
 
@@ -82,7 +76,7 @@ class RouteController extends Controller
         if (!$dijkstraResult->route_available) {
             return response()->json([
                 'error' => $dijkstraResult->message ?? 'Rute tidak ditemukan.',
-                'start_address_display' => $alamatKantorDesa, // Kirim juga jika ada error
+                'start_address_display' => $alamatKantorDesa,
                 'destination_address_display' => $alamatTujuan
             ], 404);
         }
@@ -131,10 +125,8 @@ class RouteController extends Controller
         return response()->json([
             'path' => $uniqueFinalPolyline,
             'distance' => round($totalTravelDistance, 2),
-            'start_address_display' => $alamatKantorDesa, // TAMBAHKAN
-            'destination_address_display' => $alamatTujuan, // TAMBAHKAN
-            // Jika nanti ada rute alternatif, tambahkan di sini juga
-            // 'alternative_route' => [...]
+            'start_address_display' => $alamatKantorDesa,
+            'destination_address_display' => $alamatTujuan,
         ]);
     }
 }

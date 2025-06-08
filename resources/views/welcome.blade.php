@@ -13,9 +13,7 @@
 @endsection
 
 @push('styles')
-{{-- <link rel="stylesheet" href="{{ asset('css/custom_welcome.css') }}"> --}}
 @endpush
 
 @push('scripts')
-{{-- <script src="{{ asset('js/custom_welcome.js') }}"></script> --}}
 @endpush

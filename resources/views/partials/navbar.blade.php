@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg border-bottom fixed-top"> {{-- Sesuaikan kelas jika perlu --}}
+<nav class="navbar navbar-expand-lg border-bottom fixed-top">
     <div class="container-fluid">
         <button class="btn btn-primary" id="sidebarToggle">☰ Menu</button>
         <a class="navbar-brand ms-3" href="{{ Auth::check() ? route('dashboard') : url('/') }}">SIG BPJS</a>
@@ -8,15 +8,12 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
                 @guest
-                    {{-- ... (link login & register) ... --}}
                 @else
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             @if(Auth::user()->avatar)
                                 <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
                             @else
-                                {{-- Opsi: Ikon default jika tidak ada avatar --}}
-                                {{-- <i class="fas fa-user-circle fa-lg me-2" style="color: #fff;"></i> --}}
                             @endif
                             {{ Auth::user()->name }}
                             <span class="badge bg-secondary ms-2 rounded-pill" style="font-size: 0.7em;">{{ ucfirst(Auth::user()->role) }}</span>

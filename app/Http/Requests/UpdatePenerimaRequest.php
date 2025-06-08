@@ -3,13 +3,10 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule; // Import Rule
+use Illuminate\Validation\Rule;
 
 class UpdatePenerimaRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
@@ -22,7 +19,7 @@ class UpdatePenerimaRequest extends FormRequest
      */
     public function rules(): array
     {
-        $penerimaId = $this->route('penerima')->id; // Dapatkan ID penerima dari route model binding
+        $penerimaId = $this->route('penerima')->id;
 
         return [
             'nik' => [

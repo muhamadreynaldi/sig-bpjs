@@ -11,12 +11,12 @@ class UpdateProfileRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Izinkan user yang terautentikasi untuk membuat request ini
+        return true;
     }
 
     public function rules(): array
     {
-        $userId = Auth::id(); // Dapatkan ID user yang sedang login
+        $userId = Auth::id();
 
         return [
             'name' => ['required', 'string', 'max:255'],
@@ -25,11 +25,11 @@ class UpdateProfileRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('users')->ignore($userId), // Email harus unik, kecuali untuk user ini sendiri
+                Rule::unique('users')->ignore($userId),
             ],
-            'current_password' => ['nullable', 'string', 'current_password'], // Hanya jika ingin ubah password
+            'current_password' => ['nullable', 'string', 'current_password'],
             'password' => ['nullable', 'string', 'confirmed', Password::defaults(), 'required_with:current_password'],
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'], // Maks 2MB
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ];
     }
 

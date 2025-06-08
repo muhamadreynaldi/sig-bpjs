@@ -14,14 +14,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            UserSeeder::class,      // Ini akan membuat atau memperbarui 'admin@gmail.com'
+            UserSeeder::class,
             PenerimaSeeder::class,
         ]);
 
-        // Baris di bawah ini akan membuat user 'test@example.com'
-        // Jika Anda ingin user ini juga dikelola oleh UserSeeder, pindahkan ke sana.
-        // Atau, pastikan emailnya unik dan tidak bentrok.
-        \App\Models\User::factory()->create([ // Pastikan namespace User benar
+        \App\Models\User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
