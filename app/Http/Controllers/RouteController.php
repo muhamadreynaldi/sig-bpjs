@@ -7,6 +7,7 @@ use App\Services\DijkstraService;
 use App\Models\Penerima;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class RouteController extends Controller
 {
@@ -18,16 +19,19 @@ class RouteController extends Controller
         $this->dijkstraService = $dijkstraService;
     }
 
-    public function indexPage(Request $request): View
+    public function indexPage(): View
     {
         $allPenerimas = Penerima::orderBy('nama')->get(['id', 'nik', 'nama', 'lat', 'lng']);
-        $kantorDesaCoords = [-0.06173637665163168, 109.36675978082265];
+        $kantorDesaCoords = [-0.061736, 109.366759];
         
+        $allGraphNodes = $this->dijkstraService->getAllNodes();
+
         return view('pages.rute.index', [
             'allPenerimas' => $allPenerimas,
             'kantorDesaCoords' => $kantorDesaCoords,
             'defaultMapCenter' => $kantorDesaCoords,
-            'defaultZoomLevel' => 14
+            'defaultZoomLevel' => 14,
+            'allGraphNodes' => $allGraphNodes,
         ]);
     }
 
@@ -39,94 +43,43 @@ class RouteController extends Controller
             'destination_penerima_id' => 'required|exists:penerimas,id',
         ]);
 
-        $startLat = (float) $request->input('start_lat');
-        $startLng = (float) $request->input('start_lng');
+        try {
+            $startLat = (float) $request->input('start_lat');
+            $startLng = (float) $request->input('start_lng');
 
-        $penerimaTujuan = Penerima::findOrFail($request->input('destination_penerima_id'));
-        $endLat = (float) $penerimaTujuan->lat;
-        $endLng = (float) $penerimaTujuan->lng;
+            $penerimaTujuan = Penerima::findOrFail($request->input('destination_penerima_id'));
+            $endLat = (float) $penerimaTujuan->lat;
+            $endLng = (float) $penerimaTujuan->lng;
 
-        $alamatKantorDesa = "Kantor Desa Sungai Raya, Kabupaten Kubu Raya";
-        $alamatTujuan = $penerimaTujuan->alamat ?: ($penerimaTujuan->dusun ? 'Dusun ' . $penerimaTujuan->dusun : $penerimaTujuan->nama);
-
-        $startNodeId = $this->dijkstraService->findNearestNode($startLat, $startLng);
-        $endNodeId = $this->dijkstraService->findNearestNode($endLat, $endLng);
-
-        if (!$startNodeId || !$endNodeId) {
-            return response()->json([
-                'error' => 'Tidak dapat menemukan node jalan terdekat untuk titik awal atau tujuan.',
-                'start_address_display' => $alamatKantorDesa,
-                'destination_address_display' => $alamatTujuan
-            ], 400);
-        }
-
-        if ($startNodeId === $endNodeId) {
-            $directPathCoords = [ [$startLat, $startLng], [$endLat, $endLng] ];
-            $directDistance = $this->dijkstraService->haversineDistance($startLat, $startLng, $endLat, $endLng);
-            return response()->json([
-                'path' => $directPathCoords,
-                'distance' => round($directDistance, 2),
-                'start_address_display' => $alamatKantorDesa,
-                'destination_address_display' => $alamatTujuan
-            ]);
-        }
-
-        $dijkstraResult = $this->dijkstraService->calculateDijkstraPath($startNodeId, $endNodeId);
-
-        if (!$dijkstraResult->route_available) {
-            return response()->json([
-                'error' => $dijkstraResult->message ?? 'Rute tidak ditemukan.',
-                'start_address_display' => $alamatKantorDesa,
-                'destination_address_display' => $alamatTujuan
-            ], 404);
-        }
-
-        $graphPolyline = $dijkstraResult->polyline;
-        $distanceOnGraph = (float) $dijkstraResult->total_distance;
-
-        $finalPolyline = [];
-        $totalTravelDistance = 0;
-
-        $finalPolyline[] = [$startLat, $startLng];
-        $startSnappedNodeCoords = $this->dijkstraService->getNodeCoordinatesById($startNodeId);
-
-        if ($startSnappedNodeCoords) {
-            $totalTravelDistance += $this->dijkstraService->haversineDistance(
-                $startLat, $startLng,
-                $startSnappedNodeCoords['lat'], $startSnappedNodeCoords['lng']
-            );
-        }
-
-        if (!empty($graphPolyline)) {
-            $finalPolyline = array_merge($finalPolyline, $graphPolyline);
-        }
-
-        $totalTravelDistance += $distanceOnGraph;
-        $endSnappedNodeCoords = $this->dijkstraService->getNodeCoordinatesById($endNodeId);
-
-        if ($endSnappedNodeCoords) {
-            $totalTravelDistance += $this->dijkstraService->haversineDistance(
-                $endSnappedNodeCoords['lat'], $endSnappedNodeCoords['lng'],
-                $endLat, $endLng
-            );
-        }
-        $finalPolyline[] = [$endLat, $endLng];
-
-        $uniqueFinalPolyline = [];
-        if (!empty($finalPolyline)) {
-            $uniqueFinalPolyline[] = $finalPolyline[0];
-            for ($i = 1; $i < count($finalPolyline); $i++) {
-                if (abs($finalPolyline[$i][0] - $finalPolyline[$i-1][0]) > 1e-7 || abs($finalPolyline[$i][1] - $finalPolyline[$i-1][1]) > 1e-7) {
-                    $uniqueFinalPolyline[] = $finalPolyline[$i];
-                }
+            // Panggil satu fungsi utama dari service
+            $routeResult = $this->dijkstraService->getFinalRoute($startLat, $startLng, $endLat, $endLng);
+            
+            if ($routeResult === null) {
+                return response()->json(['error' => 'Rute tidak dapat ditemukan atau terjadi kesalahan.'], 404);
             }
-        }
 
-        return response()->json([
-            'path' => $uniqueFinalPolyline,
-            'distance' => round($totalTravelDistance, 2),
-            'start_address_display' => $alamatKantorDesa,
-            'destination_address_display' => $alamatTujuan,
-        ]);
+            // Rakit polyline akhir untuk peta
+            $finalPath = $routeResult['path'];
+            array_unshift($finalPath, [$startLat, $startLng]); // Tambah titik awal asli
+            $finalPath[] = [$endLat, $endLng]; // Tambah titik akhir asli
+
+            // Hitung jarak total
+            $totalDistance = 0;
+            for ($i = 0; $i < count($finalPath) - 1; $i++) {
+                $totalDistance += $this->dijkstraService->haversineDistance($finalPath[$i][0], $finalPath[$i][1], $finalPath[$i+1][0], $finalPath[$i+1][1]);
+            }
+
+            return response()->json([
+                'path' => $finalPath,
+                'distance' => round($totalDistance, 2),
+                'nodes' => $routeResult['nodes'],
+                'start_address_display' => "Kantor Desa Sungai Raya",
+                'destination_address_display' => $penerimaTujuan->alamat ?: $penerimaTujuan->nama,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Route Calculation Error: ' . $e->getMessage() . ' on line ' . $e->getLine() . ' in file ' . $e->getFile());
+            return response()->json(['error' => 'Terjadi kesalahan internal saat menghitung rute.'], 500);
+        }
     }
 }
