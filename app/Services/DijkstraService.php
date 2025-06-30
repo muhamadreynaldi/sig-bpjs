@@ -87,7 +87,7 @@ class DijkstraService
     }
     
     /**
-     * HELPER: Merakit semua potongan polyline menjadi satu rute utuh.
+     * Merakit semua potongan polyline menjadi satu rute utuh.
      */
     private function assembleFinalPolyline(array $bestRoute): array
     {
@@ -134,7 +134,6 @@ class DijkstraService
     }
     
     /**
-     * HELPER: "Snap to Road" yang paling canggih.
      * Mencari ruas jalan terdekat dan mengembalikan informasi lengkap tentangnya.
      */
     private function snapPointToRoad(float $targetLat, float $targetLng): ?array
@@ -349,8 +348,6 @@ class DijkstraService
             return (object)["route_available" => false, "message" => "Gagal merekonstruksi rute."];
         }
         
-        // --- LOGIKA PERAKITAN POLYLINE YANG DISEMPURNAKAN ---
-        
         $fullPolyline = [];
         // Jika path hanya 1 node (awal == tujuan), kembalikan koordinat node itu saja
         if (count($pathNodeIds) === 1) {
@@ -417,8 +414,6 @@ public function trimPolylineToExactPoint(array $polyline, float $targetLat, floa
         return $polyline;
     }
 
-    // --- LOGIKA BARU YANG LEBIH CERDAS ---
-
     // 1. Temukan dulu VERTEX (sudut) terdekat di rute sebagai "jangkar".
     $minVertexDistance = PHP_FLOAT_MAX;
     $closestVertexIndex = -1;
@@ -432,7 +427,7 @@ public function trimPolylineToExactPoint(array $polyline, float $targetLat, floa
     }
 
     if ($closestVertexIndex === -1) {
-        return $polyline; // Failsafe
+        return $polyline;
     }
     
     // Jika vertex terdekat adalah titik pertama, kita tidak bisa mencari segmen sebelumnya.
