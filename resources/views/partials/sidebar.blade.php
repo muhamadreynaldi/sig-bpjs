@@ -23,6 +23,7 @@
         @endauth
     </div>
     <div class="sidebar-footer mt-auto">
-        <small>Designed by Muhamad Reynaldi</small>
+        <small>Designed by <a href="https://www.instagram.com/mhreynaldi/" target="_blank">Muhamad Reynaldi</a>
+</div></small>
     </div>
 </div>

@@ -34,52 +34,57 @@
     <div class="card filter-card shadow-sm">
         <div class="card-header"><i class="fas fa-filter me-1"></i>Filter Data Peta</div>
         <div class="card-body">
-            <form method="GET" action="{{ route('pemetaan.index') }}">
-                <div class="row g-3 align-items-end">
-                    <div class="col-md-4">
-                        <label for="search_nama_nik" class="form-label">Cari Nama/NIK:</label>
-                         <select name="search_nama_nik" id="searchPemetaanSelect2" class="form-select">
-                            <option value="">Ketik atau pilih Nama/NIK...</option>
-                            @if(isset($searchOptionsList))
-                                @foreach($searchOptionsList as $option)
-                                    <option value="{{ $option->nik }} - {{ $option->nama }}"
-                                            {{ (isset($input['search_nama_nik']) && $input['search_nama_nik'] == ($option->nik . ' - ' . $option->nama)) ? 'selected' : '' }}>
-                                        {{ $option->nik }} - {{ $option->nama }}
-                                    </option>
-                                @endforeach
-                            @endif
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="dusun" class="form-label">Filter Dusun:</label>
-                        <select name="dusun" id="dusun" class="form-select">
-                            <option value="">Semua Dusun</option>
-                            @foreach($dusunList as $itemDusun)
-                            <option value="{{ $itemDusun }}" {{ ($input['dusun'] ?? '') == $itemDusun ? 'selected' : '' }}>{{ $itemDusun }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="status" class="form-label">Filter Status BPJS:</label>
-                        <select name="status" id="status" class="form-select">
-                            <option value="">Semua Status</option>
-                            @foreach($statusList as $itemStatus)
-                            <option value="{{ $itemStatus }}" {{ ($input['status'] ?? '') == $itemStatus ? 'selected' : '' }}>{{ $itemStatus }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-sync-alt"></i> Terapkan Filter
-                        </button>
-                        @if( !empty($input['search_nama_nik']) || !empty($input['dusun']) || !empty($input['status']) )
-                        <a href="{{ route('pemetaan.index') }}" class="btn btn-outline-secondary w-100 mt-2">
-                            <i class="fas fa-times"></i> Reset Filter
-                        </a>
-                        @endif
-                    </div>
-                </div>
-            </form>
+            {{-- Ganti form filter Anda menjadi seperti ini --}}
+<form id="filterForm" method="GET" action="{{ route('pemetaan.index') }}">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label for="search_nama_nik" class="form-label">Cari Nama/NIK:</label>
+            {{-- Tambahkan onchange di sini --}}
+            <select name="search_nama_nik" id="searchPemetaanSelect2" class="form-select" onchange="this.form.submit()">
+                <option value="">-- Semua Penerima --</option>
+                @if(isset($searchOptionsList))
+                    @foreach($searchOptionsList as $option)
+                        <option value="{{ $option->nik }} - {{ $option->nama }}"
+                                {{ (isset($input['search_nama_nik']) && $input['search_nama_nik'] == ($option->nik . ' - ' . $option->nama)) ? 'selected' : '' }}>
+                            {{ $option->nik }} - {{ $option->nama }}
+                        </option>
+                    @endforeach
+                @endif
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="dusun" class="form-label">Filter Dusun:</label>
+            {{-- Tambahkan onchange di sini --}}
+            <select name="dusun" id="dusun" class="form-select" onchange="this.form.submit()">
+                <option value="">Semua Dusun</option>
+                @foreach($dusunList as $itemDusun)
+                <option value="{{ $itemDusun }}" {{ ($input['dusun'] ?? '') == $itemDusun ? 'selected' : '' }}>{{ $itemDusun }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="status" class="form-label">Filter Status BPJS:</label>
+            {{-- Tambahkan onchange di sini --}}
+            <select name="status" id="status" class="form-select" onchange="this.form.submit()">
+                <option value="">Semua Status</option>
+                @foreach($statusList as $itemStatus)
+                <option value="{{ $itemStatus }}" {{ ($input['status'] ?? '') == $itemStatus ? 'selected' : '' }}>{{ $itemStatus }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-2">
+            {{-- Tombol ini sekarang opsional, tapi baik untuk tetap ada --}}
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-sync-alt"></i> Terapkan
+            </button>
+            @if( !empty($input['search_nama_nik']) || !empty($input['dusun']) || !empty($input['status']) )
+            <a href="{{ route('pemetaan.index') }}" class="btn btn-outline-secondary w-100 mt-2">
+                <i class="fas fa-times"></i> Reset
+            </a>
+            @endif
+        </div>
+    </div>
+</form>
         </div>
     </div>
 

@@ -22,7 +22,7 @@ class RouteController extends Controller
     public function indexPage(): View
     {
         $allPenerimas = Penerima::orderBy('nama')->get(['id', 'nik', 'nama', 'lat', 'lng']);
-        $kantorDesaCoords = [-0.061736, 109.366759];
+        $kantorDesaCoords = [-0.06163903050132983, 109.3666303306687];
         
         $allGraphNodes = $this->dijkstraService->getAllNodes();
 

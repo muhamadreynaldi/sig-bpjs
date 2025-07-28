@@ -24,6 +24,9 @@ class StorePenerimaRequest extends FormRequest
             'alamat' => 'nullable|string',
             'dusun' => 'required|string|max:100',
             'status' => 'required|string|in:Aktif,Nonaktif,Meninggal',
+            'rt' => 'nullable|numeric',
+            'rw' => 'nullable|numeric',
+            'jenis_kepesertaan' => 'required',
             'lat' => 'required|numeric|between:-90,90',
             'lng' => 'required|numeric|between:-180,180',
         ];

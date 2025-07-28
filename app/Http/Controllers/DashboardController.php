@@ -37,8 +37,8 @@ class DashboardController extends Controller
 
         $totalPenerima = Penerima::count();
         $totalAktif = Penerima::where('status', 'Aktif')->count();
-        $totalNonaktif = Penerima::where('status', 'Nonaktif')->count();
-        $totalMeninggal = Penerima::where('status', 'Meninggal')->count();
+        $totalNonaktif = Penerima::where('status', 'Non-Aktif')->count();
+        $totalMeninggal = Penerima::where('status', 'non jkn')->count();
         $jumlahDusun = Penerima::distinct()->count('dusun');
 
         $user = Auth::user();

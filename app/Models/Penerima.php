@@ -22,6 +22,10 @@ class Penerima extends Model
         'status',
         'lat',
         'lng',
+        'rt',
+        'rw',
+        'jenis_kepesertaan',
+        'bantuan_lainnya'
     ];
 
     /**
@@ -30,4 +34,7 @@ class Penerima extends Model
      * @var string
      */
     protected $table = 'penerimas';
+        protected $casts = [
+        'bantuan_lainnya' => 'array', // Ini akan mengubah JSON menjadi array secara otomatis
+    ];
 }

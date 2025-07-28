@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg border-bottom fixed-top">
     <div class="container-fluid">
         <button class="btn btn-primary" id="sidebarToggle">☰ Menu</button>
-        <a class="navbar-brand ms-3" href="{{ Auth::check() ? route('dashboard') : url('/') }}">SIG BPJS</a>
+        <a class="navbar-brand ms-3" href="{{ Auth::check() ? route('dashboard') : url('/') }}">Aplikasi Pemetaan BPJS</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>

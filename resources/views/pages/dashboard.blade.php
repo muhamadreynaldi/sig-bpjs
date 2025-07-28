@@ -56,6 +56,18 @@
         </div>
     </div>
 
+<div class="card mt-4">
+    <div class="card-header">
+        <h4>Layanan BPJS Kesehatan</h4>
+    </div>
+    <div class="card-body">
+        <p>Untuk pengecekan status kepesertaan JKN, hubungi Layanan Resmi BPJS Kesehatan (PANDAWA) melalui WhatsApp.</p>
+        <a href="https://wa.me/628118165165" target="_blank" class="btn btn-info">
+            <i class="fab fa-whatsapp"></i> Hubungi PANDAWA (08118165165)
+        </a>
+    </div>
+</div>
+
     <div class="row mt-2 mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -156,7 +168,7 @@
             <div class="card summary-card bg-card-meninggal shadow">
                  <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="card-title-text">Penerima Meninggal</div>
+                        <div class="card-title-text">Non JKN</div>
                         <div class="card-value">{{ $totalMeninggal }}</div>
                     </div>
                     <i class="fas fa-user-slash card-icon"></i>

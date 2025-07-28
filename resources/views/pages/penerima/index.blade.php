@@ -3,6 +3,40 @@
 @section('title', 'Data Penerima BPJS - SIG BPJS')
 
 @section('content')
+
+
+<div class="card">
+    <div class="card-header">
+        <h4>Kelola Data Penerima</h4>
+    </div>
+    <div class="card-body">
+        <p>Gunakan tombol di bawah ini untuk mengunduh data dalam format Excel atau mengunggah data dari file Excel.</p>
+        
+        <a href="{{ route('penerimas.export') }}" class="btn btn-success">
+            <i class="fas fa-file-excel"></i> Export ke Excel
+        </a>
+
+        <hr>
+
+        <form action="{{ route('penerimas.import') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="form-group">
+                <label for="file">Import File Excel</label>
+                <input type="file" name="file" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-file-upload"></i> Import Data
+            </button>
+        </form>
+@if(session('import_success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('import_success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    </div>
+</div>
+
 <div class="container-fluid mt-4">
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -14,12 +48,12 @@
             </a>
         </div>
         <div class="card-body">
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
+    @if(session('crud_success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('crud_success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
             @if(session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
@@ -43,62 +77,55 @@
 
             <div class="table-responsive">
                 <table class="table table-bordered table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>No.</th>
-                            <th>NIK</th>
-                            <th>Nama</th>
-                            <th>Alamat</th>
-                            <th>Dusun</th>
-                            <th>Status BPJS</th>
-                            <th>Latitude</th>
-                            <th>Longitude</th>
-                            <th style="width: 15%;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($penerimas as $index => $penerima)
-                        <tr>
-                            <td>{{ $penerimas->firstItem() + $index }}</td>
-                            <td>{{ $penerima->nik }}</td>
-                            <td>{{ $penerima->nama }}</td>
-                            <td>{{ Str::limit($penerima->alamat, 30) }}</td>
-                            <td>{{ $penerima->dusun }}</td>
-                            <td>
-                                @if($penerima->status == 'Aktif')
-                                    <span class="badge bg-success">{{ $penerima->status }}</span>
-                                @elseif($penerima->status == 'Nonaktif')
-                                    <span class="badge bg-warning text-dark">{{ $penerima->status }}</span>
-                                @elseif($penerima->status == 'Meninggal')
-                                    <span class="badge bg-dark">{{ $penerima->status }}</span>
-                                @else
-                                    <span class="badge bg-secondary">{{ $penerima->status }}</span>
-                                @endif
-                            </td>
-                            <td>{{ $penerima->lat }}</td>
-                            <td>{{ $penerima->lng }}</td>
-                            <td>
-                                    <a href="{{ route('penerima.show', $penerima->id) }}" class="btn btn-info btn-sm me-1" title="Detail">
-                                        <i class="fas fa-eye"></i> Lihat
-                                    </a>
-                                    <a href="{{ route('penerima.edit', $penerima->id) }}" class="btn btn-primary btn-sm me-1" title="Edit">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </a>
-                                    <form action="{{ route('penerima.destroy', $penerima->id) }}" method="POST" class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
-                                            <i class="fas fa-trash-alt"></i> Hapus
-                                        </button>
-                                    </form>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="9" class="text-center">Tidak ada data penerima.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
+                    <thead>
+    <tr>
+        <th>No</th>
+        <th>Nama</th>
+        <th>NIK</th>
+        <th>Alamat</th>
+        <th>RT/RW</th>
+        <th>Dusun</th>
+        <th>Jenis Kepesertaan</th>
+        <th>Status</th>
+        <th width="280px">Action</th>
+    </tr>
+</thead>
+
+<tbody>
+    @foreach ($penerimas as $index => $penerima)
+        <tr>
+            <td>{{ $penerimas->firstItem() + $index }}</td>
+            <td>{{ $penerima->nama }}</td>
+            <td>{{ $penerima->nik }}</td>
+            <td>{{ $penerima->alamat }}</td>
+            <td>{{ $penerima->rt }}/{{ $penerima->rw }}</td>
+            <td>{{ $penerima->dusun }}</td>
+            <td>{{ $penerima->jenis_kepesertaan }}</td>
+            <td>
+    @php
+        $statusClass = 'bg-secondary'; // Warna abu-abu sebagai default
+        if ($penerima->status == 'Terdaftar') {
+            $statusClass = 'bg-success';
+        } elseif ($penerima->status == 'Nonaktif') {
+            $statusClass = 'bg-warning text-dark';
+        } elseif ($penerima->status == 'Meninggal') {
+            $statusClass = 'bg-dark';
+        }
+    @endphp
+    <span class="badge {{ $statusClass }}">{{ $penerima->status ?? 'Tidak Diketahui' }}</span>
+</td>
+            <td>
+                <form action="{{ route('penerima.destroy', $penerima->id) }}" method="POST">
+                    <a class="btn btn-info" href="{{ route('penerima.show', $penerima->id) }}">Show</a>
+                    <a class="btn btn-primary" href="{{ route('penerima.edit', $penerima->id) }}">Edit</a>
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+    @endforeach
+</tbody>
                 </table>
             </div>
             <div class="mt-3">

@@ -8,6 +8,7 @@ use App\Http\Controllers\PenerimaController;
 use App\Http\Controllers\PemetaanController; 
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ImportExportController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -41,5 +42,7 @@ Route::get('/api/penerima-select2-suggestions', [App\Http\Controllers\PenerimaCo
 
 Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+Route::get('/penerimas/export', [ImportExportController::class, 'export'])->name('penerimas.export');
+Route::post('/penerimas/import', [ImportExportController::class, 'import'])->name('penerimas.import');
 });
     

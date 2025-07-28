@@ -30,16 +30,33 @@ class PenerimaController extends Controller
 
     public function create(): View
     {
-        $statusOptions = ['Aktif', 'Nonaktif', 'Meninggal'];
-        return view('pages.penerima.create', compact('statusOptions'));
+        $dusunList = Penerima::select('dusun')->whereNotNull('dusun')->distinct()->orderBy('dusun')->pluck('dusun');
+        $jenisKepesertaanList = ['NON JKN', 'PBI APBDES', 'PBI APBD', 'PBI APBN / JKN KESEHATAN'];
+        $bantuanLainnyaList = ['BLTDD', 'BPJS Ketenagakerjaan'];
+        
+        // TAMBAHKAN BARIS INI
+        $statusList = ['Terdaftar', 'Belum Terdaftar', 'Non-Aktif', 'Meninggal Dunia'];
+
+        return view('pages.penerima.create', compact('dusunList', 'jenisKepesertaanList', 'bantuanLainnyaList', 'statusList'));
     }
 
-    public function store(StorePenerimaRequest $request): RedirectResponse
+    public function store(Request $request)
     {
-        Penerima::create($request->validated());
+        // BAGIAN YANG DIPERBAIKI ADA DI BAWAH INI
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'nik' => 'required|string|unique:penerimas,nik',
+            'dusun' => 'required|string',
+            'rt' => 'nullable|string|max:3',
+            'rw' => 'nullable|string|max:3',
+            'jenis_kepesertaan' => 'required|string',
+            'status' => 'required|string', // Aturan validasi yang ditambahkan
+        ]);
 
-        return redirect()->route('penerima.index')
-                         ->with('success', 'Data penerima berhasil ditambahkan.');
+        Penerima::create($request->all());
+
+    return redirect()->route('penerima.index')
+                     ->with('crud_success', 'Data penerima berhasil ditambahkan.');
     }
 
         public function show(Penerima $penerima): View
@@ -49,25 +66,43 @@ class PenerimaController extends Controller
 
     public function edit(Penerima $penerima): View
     {
-        $statusOptions = ['Aktif', 'Nonaktif', 'Meninggal'];
-        return view('pages.penerima.edit', compact('penerima', 'statusOptions'));
+        $dusunList = Penerima::select('dusun')->whereNotNull('dusun')->distinct()->orderBy('dusun')->pluck('dusun');
+        $jenisKepesertaanList = ['NON JKN', 'PBI APBDES', 'PBI APBD', 'PBI APBN / JKN KESEHATAN'];
+        $bantuanLainnyaList = ['BLTDD', 'BPJS Ketenagakerjaan'];
+
+        // TAMBAHKAN BARIS INI
+        $statusList = ['Terdaftar', 'Belum Terdaftar', 'Non-Aktif', 'Meninggal Dunia'];
+
+        return view('pages.penerima.edit', compact('penerima', 'dusunList', 'jenisKepesertaanList', 'bantuanLainnyaList', 'statusList'));
     }
 
-    public function update(UpdatePenerimaRequest $request, Penerima $penerima): RedirectResponse
+    public function update(Request $request, Penerima $penerima)
     {
-        $penerima->update($request->validated());
+        // BAGIAN YANG DIPERBAIKI JUGA ADA DI SINI
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'nik' => 'required|string|unique:penerimas,nik,' . $penerima->id,
+            'dusun' => 'required|string',
+            'rt' => 'nullable|string|max:3',
+            'rw' => 'nullable|string|max:3',
+            'jenis_kepesertaan' => 'required|string',
+            'status' => 'required|string', // Aturan validasi yang ditambahkan
+        ]);
 
-        return redirect()->route('penerima.index')
-                         ->with('success', 'Data penerima berhasil diperbarui.');
+        $penerima->update($request->all());
+
+    return redirect()->route('penerima.index')
+                     ->with('crud_success', 'Data penerima berhasil diperbarui.');
     }
 
         public function destroy(Penerima $penerima): RedirectResponse
     {
-        try {
-            $penerima->delete();
-            return redirect()->route('penerima.index')
-                             ->with('success', 'Data penerima berhasil dihapus.');
-        } catch (\Exception $e) {
+    try {
+        $penerima->delete();
+        // UBAH BARIS INI
+        return redirect()->route('penerima.index')
+                         ->with('crud_success', 'Data penerima berhasil dihapus.');
+    } catch (\Exception $e) {
             return redirect()->route('penerima.index')
                              ->with('error', 'Gagal menghapus data penerima. Error: ' . $e->getMessage());
         }
